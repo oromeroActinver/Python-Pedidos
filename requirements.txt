@@ -1,0 +1,25 @@
+# Paquetes principales de FastAPI
+fastapi==0.109.1
+uvicorn==0.27.0
+
+# SQLAlchemy y base de datos
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9  # Para PostgreSQL (o mysql-connector-python para MySQL)
+
+# Autenticación y seguridad
+python-jose==3.3.0      # Para JWT
+bcrypt==4.1.2           # Para hashing de contraseñas
+passlib==1.7.4          # Compatibilidad con bcrypt
+
+# Validación de datos
+pydantic==2.6.1
+pydantic-settings==2.1.0
+
+# Middleware y CORS
+python-multipart==0.0.6  # Necesario para formularios
+python-dotenv==1.0.0     # Para variables de entorno
+
+# Para producción
+gunicorn==21.2.0         # Servidor de producción
+httptools==0.6.1         # Mejora rendimiento
+uvloop==0.19.0           # Mejora rendimiento asíncrono
