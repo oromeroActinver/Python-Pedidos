@@ -12,22 +12,14 @@ Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
+origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 
-# Orígenes permitidos (URL de tu frontend)
-origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://localhost:3000",  # o la URL donde tengas tu frontend
-    "http://tu-dominio.com"
-]
-
-# Agregamos el middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       #origins,      # o ["*"] para desarrollo sin restricciones
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],        # permite GET, POST, PUT, DELETE, etc.
-    allow_headers=["*"],        # permite cualquier encabezado
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Incluimos el router con prefijo /auth
