@@ -1,32 +1,27 @@
-# Paquetes principales de FastAPI
 fastapi==0.109.1
 uvicorn==0.27.0
-
-# SQLAlchemy y PostgreSQL
 sqlalchemy==2.0.25
 psycopg2-binary==2.9.9
 
-# Autenticación y seguridad
-python-jose==3.3.0
+# Seguridad
+python-jose[cryptography]==3.3.0  # ¡Agrega cryptography!
 bcrypt==4.1.2
 passlib==1.7.4
 
-# Validación de datos (VERSIONES ESTABLES)
-pydantic==2.5.3              # ¡Clave! Versión compatible
-pydantic-settings==2.0.3      # Versión para pydantic 2.5.x
-pydantic-core==2.14.6         # Fijamos versión estable
+# Pydantic (SOLUCIÓN ALTERNATIVA)
+pydantic==1.10.15  # Versión legacy sin Rust
+pydantic-settings==1.0.0
 
-# Middleware y utilidades
+# Utilidades
 python-multipart==0.0.6
 python-dotenv==1.0.0
 
-# Producción (performance)
+# Producción
 gunicorn==21.2.0
 httptools==0.6.1
 uvloop==0.19.0
 
-# Dependencias secundarias (evitan conflictos)
+# Dependencias explícitas
 typing-extensions==4.8.0
-anyio==4.3.0
+anyio==3.7.1
 click==8.1.7
-starlette==0.35.1
