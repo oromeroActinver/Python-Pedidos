@@ -1,27 +1,30 @@
+# Core FastAPI
 fastapi==0.109.1
 uvicorn==0.27.0
+
+# Database
 sqlalchemy==2.0.25
 psycopg2-binary==2.9.9
 
-# Seguridad
-python-jose[cryptography]==3.3.0  # ¡Agrega cryptography!
+# Auth
+python-jose[cryptography]==3.3.0
 bcrypt==4.1.2
 passlib==1.7.4
 
-# Pydantic (SOLUCIÓN ALTERNATIVA)
-pydantic==1.10.15  # Versión legacy sin Rust
-pydantic-settings==1.0.0
+# Pydantic (VERSIÓN COMPATIBLE)
+pydantic==1.10.15
+# ELIMINA pydantic-settings (no necesario en v1)
 
-# Utilidades
+# Utils
 python-multipart==0.0.6
 python-dotenv==1.0.0
 
-# Producción
+# Production
 gunicorn==21.2.0
 httptools==0.6.1
 uvloop==0.19.0
 
-# Dependencias explícitas
+# Dependencies
 typing-extensions==4.8.0
 anyio==3.7.1
 click==8.1.7
