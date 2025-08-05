@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
+from datetime import datetime
 
 # Esquemas para usuarios
 class UserBase(BaseModel):
@@ -31,7 +32,10 @@ class ProductOut(ProductBase):
     class Config:
         orm_mode = True
 
-# Esquemas para pedidos
+from pydantic import BaseModel
+from typing import Optional, List, Dict, Any
+from datetime import datetime
+
 class PedidoBase(BaseModel):
     pedido: str
     cliente: str
@@ -53,10 +57,11 @@ class PedidoUpdate(BaseModel):
 
 class PedidoOut(PedidoBase):
     id: int
+    created_at: Optional[datetime] = None  # Campo opcional
+    updated_at: Optional[datetime] = None  # Campo opcional
     
     class Config:
         orm_mode = True
 
-# Esquema para respuesta de lista de pedidos
 class PedidoList(BaseModel):
     pedidos: List[PedidoOut]

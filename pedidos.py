@@ -9,31 +9,36 @@ from schemas import PedidoCreate, PedidoOut, PedidoUpdate
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])
 
-@router.post(
-    "/",
-    response_model=PedidoOut,
-    status_code=status.HTTP_201_CREATED,
-    summary="Crear un nuevo pedido"
-)
-async def crear_pedido(
-    pedido: PedidoCreate,
-    db: Session = Depends(get_db)
-):
-    """
-    Crea un nuevo pedido en el sistema.
-    """
+@router.get("/", response_model=List[PedidoOut])
+async def listar_pedidos(db: Session = Depends(get_db)):
     try:
-        # Usamos .dict() para Pydantic v1
-        nuevo_pedido = Pedido(**pedido.dict())
-        db.add(nuevo_pedido)
-        db.commit()
-        db.refresh(nuevo_pedido)
-        return nuevo_pedido
+        pedidos = db.query(Pedido).all()
+        
+        # Asegurar compatibilidad con campos opcionales
+        result = []
+        for p in pedidos:
+            pedido_data = {
+                "id": p.id,
+                "pedido": p.pedido,
+                "cliente": p.cliente,
+                "tienda": p.tienda,
+                "descripcion": p.descripcion,
+                "estado": p.estado,
+                "costo": p.costo
+            }
+            # Agregar campos opcionales solo si existen
+            if hasattr(p, 'created_at'):
+                pedido_data['created_at'] = p.created_at
+            if hasattr(p, 'updated_at'):
+                pedido_data['updated_at'] = p.updated_at
+            
+            result.append(pedido_data)
+        
+        return result
     except Exception as e:
-        db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al crear el pedido: {str(e)}"
+            status_code=500,
+            detail=f"Error al obtener pedidos: {str(e)}"
         )
 
 @router.get(
