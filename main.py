@@ -16,6 +16,7 @@ app = FastAPI()
 # Configura CORS de forma segura
 origins = [
     "http://localhost:3000",
+    "https://python-pedidos.onrender.com",
     "https://react-compras.onrender.com"
 ] + os.getenv("ALLOWED_ORIGINS", "").split(",")
 
