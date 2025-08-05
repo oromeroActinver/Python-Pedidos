@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
-from typing import List, Annotated
+from typing import List
 from datetime import datetime
 
 from database import get_db
@@ -21,16 +21,10 @@ async def crear_pedido(
 ):
     """
     Crea un nuevo pedido en el sistema.
-    
-    - **pedido**: Número/identificador del pedido
-    - **cliente**: Nombre del cliente
-    - **tienda**: Tienda/origen del pedido
-    - **descripcion**: Detalles del pedido
-    - **estado**: Estado actual (pendiente, completado, etc)
-    - **costo**: Monto total del pedido
     """
     try:
-        nuevo_pedido = Pedido(**pedido.model_dump())
+        # Usamos .dict() para Pydantic v1
+        nuevo_pedido = Pedido(**pedido.dict())
         db.add(nuevo_pedido)
         db.commit()
         db.refresh(nuevo_pedido)
@@ -54,10 +48,6 @@ async def listar_pedidos(
 ):
     """
     Obtiene una lista de todos los pedidos registrados.
-    
-    Parámetros opcionales:
-    - **skip**: Número de registros a saltar (paginación)
-    - **limit**: Límite de registros a devolver
     """
     try:
         pedidos = db.query(Pedido).offset(skip).limit(limit).all()
@@ -109,46 +99,11 @@ async def actualizar_pedido(
                 detail="Pedido no encontrado"
             )
         
-        for key, value in pedido.model_dump().items():
-            setattr(pedido_db, key, value)
-        
-        pedido_db.updated_at = datetime.utcnow()
-        db.commit()
-        db.refresh(pedido_db)
-        return pedido_db
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al actualizar pedido: {str(e)}"
-        )
-
-@router.patch(
-    "/{pedido_id}",
-    response_model=PedidoOut,
-    summary="Actualizar parcialmente un pedido"
-)
-async def actualizar_parcial_pedido(
-    pedido_id: int,
-    pedido: PedidoUpdate,
-    db: Session = Depends(get_db)
-):
-    """
-    Actualiza campos específicos de un pedido existente.
-    """
-    try:
-        pedido_db = db.query(Pedido).filter(Pedido.id == pedido_id).first()
-        if not pedido_db:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Pedido no encontrado"
-            )
-        
-        update_data = pedido.model_dump(exclude_unset=True)
+        # Usamos .dict() para Pydantic v1
+        update_data = pedido.dict()
         for key, value in update_data.items():
             setattr(pedido_db, key, value)
         
-        pedido_db.updated_at = datetime.utcnow()
         db.commit()
         db.refresh(pedido_db)
         return pedido_db
