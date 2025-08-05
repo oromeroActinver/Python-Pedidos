@@ -1,13 +1,21 @@
 from pydantic import BaseModel
+from typing import Optional, List
 
-class UserCreate(BaseModel):
+# Esquemas para usuarios
+class UserBase(BaseModel):
     username: str
+
+class UserCreate(UserBase):
     password: str
 
-class UserLogin(BaseModel):
-    username: str
+class UserLogin(UserBase):
     password: str
 
+class UserOut(UserBase):
+    id: int
+    
+    class Config:
+        orm_mode = True  # Configuración para Pydantic v1
 
 # Esquemas para productos
 class ProductBase(BaseModel):
@@ -19,7 +27,9 @@ class ProductCreate(ProductBase):
 
 class ProductOut(ProductBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
+    
+    class Config:
+        orm_mode = True
 
 # Esquemas para pedidos
 class PedidoBase(BaseModel):
@@ -43,7 +53,9 @@ class PedidoUpdate(BaseModel):
 
 class PedidoOut(PedidoBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
+    
+    class Config:
+        orm_mode = True
 
 # Esquema para respuesta de lista de pedidos
 class PedidoList(BaseModel):
