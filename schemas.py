@@ -9,7 +9,20 @@ class UserLogin(BaseModel):
     password: str
 
 
-class PedidoIn(BaseModel):
+# Esquemas para productos
+class ProductBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class ProductCreate(ProductBase):
+    pass
+
+class ProductOut(ProductBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+# Esquemas para pedidos
+class PedidoBase(BaseModel):
     pedido: str
     cliente: str
     tienda: str
@@ -17,8 +30,21 @@ class PedidoIn(BaseModel):
     estado: str
     costo: float
 
-class PedidoOut(PedidoIn):
-    id: int
+class PedidoCreate(PedidoBase):
+    pass
 
-    class Config:
-        from_attributes = True  # Para Pydantic v2, antes era orm_mode = True
+class PedidoUpdate(BaseModel):
+    pedido: Optional[str] = None
+    cliente: Optional[str] = None
+    tienda: Optional[str] = None
+    descripcion: Optional[str] = None
+    estado: Optional[str] = None
+    costo: Optional[float] = None
+
+class PedidoOut(PedidoBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+# Esquema para respuesta de lista de pedidos
+class PedidoList(BaseModel):
+    pedidos: List[PedidoOut]
