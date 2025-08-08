@@ -20,12 +20,15 @@ origins = [
     "https://react-compras.onrender.com"
 ] + os.getenv("ALLOWED_ORIGINS", "").split(",")
 
+# Configuración CORS más estricta
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # En producción especifica tus dominios
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["Content-Length"],
+    max_age=600
 )
 
 # Crea tablas antes de los routers

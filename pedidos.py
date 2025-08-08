@@ -7,14 +7,18 @@ from database import get_db
 from models import Pedido
 from schemas import PedidoCreate, PedidoOut, PedidoUpdate
 
-router = APIRouter(prefix="/pedidos", tags=["pedidos"])
+router = APIRouter(
+    prefix="/pedidos",
+    tags=["pedidos"],
+    redirect_slashes=False
+)
 
-# 🔴 Elimina uno de los dos endpoints GET /pedidos/ (mantén este que es más completo)
+# Endpoint único para listar pedidos (sin duplicados)
 @router.get(
-    "/",
+    "",
     response_model=List[PedidoOut],
-    summary="Listar todos los pedidos",
-    description="Obtiene una lista paginada de todos los pedidos registrados"
+    summary="Listar pedidos",
+    description="Obtiene lista paginada de pedidos"
 )
 async def listar_pedidos(
     db: Session = Depends(get_db),
@@ -23,53 +27,54 @@ async def listar_pedidos(
 ):
     try:
         pedidos = db.query(Pedido).offset(skip).limit(limit).all()
-        
-        # Manejo seguro de campos opcionales
-        result = []
-        for p in pedidos:
-            pedido_data = {
+        return [
+            {
                 "id": p.id,
                 "pedido": p.pedido,
                 "cliente": p.cliente,
                 "tienda": p.tienda,
                 "descripcion": p.descripcion,
                 "estado": p.estado,
-                "costo": p.costo
+                "costo": p.costo,
+                "created_at": p.created_at if hasattr(p, 'created_at') else None,
+                "updated_at": p.updated_at if hasattr(p, 'updated_at') else None
             }
-            if hasattr(p, 'created_at') and p.created_at:
-                pedido_data['created_at'] = p.created_at
-            if hasattr(p, 'updated_at') and p.updated_at:
-                pedido_data['updated_at'] = p.updated_at
-            
-            result.append(pedido_data)
-        
-        return result
+            for p in pedidos
+        ]
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Error al obtener pedidos: {str(e)}"
         )
 
-@router.get(
-    "/",
-    response_model=List[PedidoOut],
-    summary="Listar todos los pedidos"
+# 🔥 NUEVO: Endpoint para crear pedidos (POST)
+@router.post(
+    "",
+    response_model=PedidoOut,
+    status_code=status.HTTP_201_CREATED,
+    summary="Crear nuevo pedido"
 )
-async def listar_pedidos(
-    db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100
+async def crear_pedido(
+    pedido: PedidoCreate,
+    db: Session = Depends(get_db)
 ):
-    """
-    Obtiene una lista de todos los pedidos registrados.
-    """
     try:
-        pedidos = db.query(Pedido).offset(skip).limit(limit).all()
-        return pedidos
+        # Convertir el modelo Pydantic a diccionario
+        pedido_data = pedido.dict()
+        
+        # Crear instancia del modelo SQLAlchemy
+        nuevo_pedido = Pedido(**pedido_data)
+        
+        db.add(nuevo_pedido)
+        db.commit()
+        db.refresh(nuevo_pedido)
+        
+        return nuevo_pedido
     except Exception as e:
+        db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al obtener pedidos: {str(e)}"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error al crear pedido: {str(e)}"
         )
 
 @router.get(
