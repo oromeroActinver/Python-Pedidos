@@ -62,6 +62,9 @@ class PedidoOut(PedidoBase):
     
     class Config:
         orm_mode = True
+        # Para Pydantic v2 usa:
+        # from pydantic import ConfigDict
+        # model_config = ConfigDict(from_attributes=True)
 
 class PedidoList(BaseModel):
     pedidos: List[PedidoOut]

@@ -9,12 +9,22 @@ from schemas import PedidoCreate, PedidoOut, PedidoUpdate
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])
 
-@router.get("/", response_model=List[PedidoOut])
-async def listar_pedidos(db: Session = Depends(get_db)):
+# 🔴 Elimina uno de los dos endpoints GET /pedidos/ (mantén este que es más completo)
+@router.get(
+    "/",
+    response_model=List[PedidoOut],
+    summary="Listar todos los pedidos",
+    description="Obtiene una lista paginada de todos los pedidos registrados"
+)
+async def listar_pedidos(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100
+):
     try:
-        pedidos = db.query(Pedido).all()
+        pedidos = db.query(Pedido).offset(skip).limit(limit).all()
         
-        # Asegurar compatibilidad con campos opcionales
+        # Manejo seguro de campos opcionales
         result = []
         for p in pedidos:
             pedido_data = {
@@ -26,10 +36,9 @@ async def listar_pedidos(db: Session = Depends(get_db)):
                 "estado": p.estado,
                 "costo": p.costo
             }
-            # Agregar campos opcionales solo si existen
-            if hasattr(p, 'created_at'):
+            if hasattr(p, 'created_at') and p.created_at:
                 pedido_data['created_at'] = p.created_at
-            if hasattr(p, 'updated_at'):
+            if hasattr(p, 'updated_at') and p.updated_at:
                 pedido_data['updated_at'] = p.updated_at
             
             result.append(pedido_data)
