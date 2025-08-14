@@ -43,6 +43,8 @@ class PedidoBase(BaseModel):
     descripcion: str
     estado: str
     costo: float
+    envio: float = 0.0  # No Optional
+    costo_compra: float = 0.0  # No Optional
 
 class PedidoCreate(PedidoBase):
     pass
@@ -54,6 +56,8 @@ class PedidoUpdate(BaseModel):
     descripcion: Optional[str] = None
     estado: Optional[str] = None
     costo: Optional[float] = None
+    envio: Optional[float] = None
+    costo_compra: Optional[float] = None
 
 class PedidoOut(PedidoBase):
     id: int
