@@ -14,38 +14,12 @@ router = APIRouter(
 )
 
 # Endpoint único para listar pedidos (sin duplicados)
-@router.get(
-    "",
-    response_model=List[PedidoOut],
-    summary="Listar pedidos",
-    description="Obtiene lista paginada de pedidos"
-)
-async def listar_pedidos(
-    db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100
-):
+@router.get("", response_model=List[PedidoOut])
+async def listar_pedidos(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     try:
-        pedidos = db.query(Pedido).offset(skip).limit(limit).all()
-        return [
-            {
-                "id": p.id,
-                "pedido": p.pedido,
-                "cliente": p.cliente,
-                "tienda": p.tienda,
-                "descripcion": p.descripcion,
-                "estado": p.estado,
-                "costo": p.costo,
-                "created_at": p.created_at if hasattr(p, 'created_at') else None,
-                "updated_at": p.updated_at if hasattr(p, 'updated_at') else None
-            }
-            for p in pedidos
-        ]
+        return db.query(Pedido).offset(skip).limit(limit).all()
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error al obtener pedidos: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error al obtener pedidos: {str(e)}")
 
 # 🔥 NUEVO: Endpoint para crear pedidos (POST)
 @router.post(

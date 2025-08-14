@@ -31,3 +31,5 @@ class Pedido(Base):
     descripcion = Column(String(500))
     estado = Column(String(20), default="pendiente", nullable=False)
     costo = Column(Float, nullable=False)
+    envio = Column(Float, default=0.0, server_default="0.0", nullable=False)
+    costo_compra = Column(Float, default=0.0, server_default="0.0", nullable=False)
