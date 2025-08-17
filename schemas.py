@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, date
 
 # Esquemas para usuarios
 class UserBase(BaseModel):
@@ -72,3 +72,31 @@ class PedidoOut(PedidoBase):
 
 class PedidoList(BaseModel):
     pedidos: List[PedidoOut]
+
+class DetalleResumenSchema(BaseModel):
+    id: Optional[int] = None
+    pedido: str
+    cliente: str
+    venta: float
+    costo: float
+    envio: float
+
+    class Config:
+        orm_mode = True
+
+
+class ResumenSchema(BaseModel):
+    id: Optional[int] = None
+    fecha: datetime   # 👈 aceptar datetime (no solo date)
+    totalVentas: Optional[float] = 0.0
+    totalCostos: Optional[float] = 0.0
+    ganancia: Optional[float] = 0.0
+    comision: Optional[float] = 0.0
+    impuestosCliente: Optional[float] = 0.0
+    impuestosProveedor: Optional[float] = 0.0
+    abono: Optional[float] = 0.0
+    descuentos: Optional[float] = 0.0
+    detalles: List[DetalleResumenSchema] = []
+
+    class Config:
+        from_attributes = True

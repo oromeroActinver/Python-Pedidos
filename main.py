@@ -6,6 +6,7 @@ from database import Base, engine
 # Importa routers DESPUÉS de crear la base de datos
 from auth import router as auth_router
 from pedidos import router as pedidos_router
+from resumenes import router as resumenes_router
 
 # Solución para errores de importación circular
 def create_tables():
@@ -38,6 +39,7 @@ create_tables()
 # Registra routers
 app.include_router(auth_router, prefix="/auth")
 app.include_router(pedidos_router)
+app.include_router(resumenes_router)
 
 @app.get("/")
 def read_root():
